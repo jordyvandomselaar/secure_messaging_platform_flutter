@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,7 +13,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple,
+        textTheme: TextTheme(
+            bodyText1: GoogleFonts.lato(color: Colors.white, fontSize: 24),
+            headline3: GoogleFonts.lato(color: Colors.white),
+            button: GoogleFonts.lato(),
+            headline2: GoogleFonts.inter(
+                color: Colors.white, fontWeight: FontWeight.w900)),
       ),
       home: HomePage(),
     );
@@ -39,12 +46,17 @@ class HomePage extends StatelessWidget {
                         : const EdgeInsets.only(bottom: 10),
                     child: Column(
                       children: [
-                        Text(
-                          "Send an encrypted message",
-                          style: Theme.of(context).textTheme.headline3,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            "Send an encrypted message",
+                            style: Theme.of(context).textTheme.headline2,
+                          ),
                         ),
                         Text(
-                            "Send any message safe and secure. Because your message is encrypted on your device, your private data can only be read by the intended recipient.")
+                          "Send any message safe and secure. Because your message is encrypted on your device, your private data can only be read by the intended recipient.",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        )
                       ],
                     ),
                   ),
