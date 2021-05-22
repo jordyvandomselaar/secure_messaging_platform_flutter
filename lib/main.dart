@@ -1,7 +1,9 @@
+import 'dart:html';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -24,7 +26,23 @@ ValueNotifier<GraphQLClient> client = ValueNotifier(
   ),
 );
 
+final router = FluroRouter();
+
+var homeHandler = Handler(handlerFunc: (context, parameters) {
+  return HomePage();
+});
+
+var decryptHandler = Handler(
+  handlerFunc: (context, parameters) {
+    print(parameters);
+    return DecryptMessagePage();
+  },
+);
+
 void main() {
+  router.define('/', handler: homeHandler);
+  router.define('/:id', handler: decryptHandler);
+
   runApp(GraphQLProvider(
     client: client,
     child: MyApp(),
@@ -45,7 +63,7 @@ class MyApp extends StatelessWidget {
             headline2: GoogleFonts.inter(
                 color: Colors.white, fontWeight: FontWeight.w900)),
       ),
-      home: HomePage(),
+      onGenerateRoute: router.generator,
     );
   }
 }
@@ -120,7 +138,12 @@ class _HomePageState extends State<HomePage> {
                                 options: MutationOptions(
                                   document: gql(createMessage),
                                   onCompleted: (dynamic resultData) {
-                                    print(resultData);
+                                    final String id =
+                                        resultData['createMessage']['id'];
+
+                                    setState(() {
+                                      _url = "${Uri.base}/$id";
+                                    });
                                   },
                                 ),
                                 builder: (runMutation, result) {
