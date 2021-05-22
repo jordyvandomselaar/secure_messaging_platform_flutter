@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
             headline2: GoogleFonts.inter(
                 color: Colors.white, fontWeight: FontWeight.w900)),
       ),
-      home: HomePage(),
+      home: DecryptMessagePage(),
     );
   }
 }
@@ -99,6 +99,76 @@ class HomePage extends StatelessWidget {
   }
 }
 
+class DecryptMessagePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Page(
+      child: LayoutBuilder(
+        builder: (buildContext, boxConstraints) {
+          final horizontal = boxConstraints.isSatisfiedBy(Size.fromWidth(800));
+
+          return Flex(
+              direction: horizontal ? Axis.horizontal : Axis.vertical,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: Padding(
+                    padding: horizontal
+                        ? const EdgeInsets.only(right: 10)
+                        : const EdgeInsets.only(bottom: 10),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            "Decrypt your message",
+                            style: Theme.of(context).textTheme.headline2,
+                          ),
+                        ),
+                        Text(
+                          "Enter the password you received",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 1,
+                  child: Padding(
+                    padding: horizontal
+                        ? const EdgeInsets.only(left: 10)
+                        : const EdgeInsets.only(top: 10),
+                    child: Container(
+                      color: Colors.white.withOpacity(.3),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              decoration: InputDecoration(hintText: "Password"),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: ElevatedButton(
+                                  onPressed: () {},
+                                  child: Text("Decrypt Message")),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ]);
+        },
+      ),
+    );
+  }
+}
+
 class Page extends StatelessWidget {
   final Widget child;
 
@@ -117,6 +187,7 @@ class Page extends StatelessWidget {
           child: FractionallySizedBox(
             widthFactor: .8,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 LayoutBuilder(
                   builder: (context, constraints) {
@@ -127,9 +198,11 @@ class Page extends StatelessWidget {
                       padding: horizontal
                           ? EdgeInsets.only(top: 50, bottom: 80)
                           : EdgeInsets.only(top: 50, bottom: 50),
-                      child: Text(
-                        "Secure Messaging Platform",
-                        style: Theme.of(context).textTheme.headline3,
+                      child: Center(
+                        child: Text(
+                          "Secure Messaging Platform",
+                          style: Theme.of(context).textTheme.headline3,
+                        ),
                       ),
                     );
                   },
