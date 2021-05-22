@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.secure_messaging_platform_flutter">
+    <!-- Required to fetch data from the internet. -->
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="secure_messaging_platform_flutter"
         android:icon="@mipmap/ic_launcher">

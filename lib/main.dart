@@ -1,10 +1,34 @@
+import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:secure_messaging_platform_flutter/mutations.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+
+const apiUrl = const String.fromEnvironment("API_URL");
+const apiKey = const String.fromEnvironment("API_KEY");
+
+final HttpLink httpLink = HttpLink(
+  apiUrl,
+);
+final AuthLink authLink =
+    AuthLink(getToken: () => apiKey, headerKey: 'x-api-key');
+final Link link = authLink.concat(httpLink);
+ValueNotifier<GraphQLClient> client = ValueNotifier(
+  GraphQLClient(
+    link: link,
+    cache: GraphQLCache(),
+  ),
+);
 
 void main() {
-  runApp(MyApp());
+  runApp(GraphQLProvider(
+    client: client,
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,12 +45,21 @@ class MyApp extends StatelessWidget {
             headline2: GoogleFonts.inter(
                 color: Colors.white, fontWeight: FontWeight.w900)),
       ),
-      home: DecryptMessagePage(),
+      home: HomePage(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final _controller = TextEditingController();
+  String? _password;
+  String? _url;
+
   @override
   Widget build(BuildContext context) {
     return Page(
@@ -79,12 +112,42 @@ class HomePage extends StatelessWidget {
                                   InputDecoration(hintText: "Your Message"),
                               minLines: 10,
                               maxLines: null,
+                              controller: _controller,
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 20),
-                              child: ElevatedButton(
-                                  onPressed: () {},
-                                  child: Text("Encrypt Message")),
+                              child: Mutation(
+                                options: MutationOptions(
+                                  document: gql(createMessage),
+                                  onCompleted: (dynamic resultData) {
+                                    print(resultData);
+                                  },
+                                ),
+                                builder: (runMutation, result) {
+                                  return ElevatedButton(
+                                      onPressed: () {
+                                        final text = _controller.text;
+                                        final iv =
+                                            encrypt.IV.fromSecureRandom(16);
+                                        final key =
+                                            encrypt.Key.fromSecureRandom(32);
+                                        final encrypter =
+                                            encrypt.Encrypter(encrypt.AES(key));
+                                        final encrypted =
+                                            encrypter.encrypt(text, iv: iv);
+
+                                        setState(() {
+                                          _password = key.base64;
+                                        });
+
+                                        runMutation({
+                                          "message": encrypted.base64,
+                                          "iv": iv.base64
+                                        });
+                                      },
+                                      child: Text("Encrypt Message"));
+                                },
+                              ),
                             )
                           ],
                         ),
