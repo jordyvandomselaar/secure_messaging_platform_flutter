@@ -23,48 +23,65 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Page(
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Column(
+      child: LayoutBuilder(
+        builder: (buildContext, boxConstraints) {
+          final horizontal = boxConstraints.isSatisfiedBy(Size.fromWidth(800));
+
+          return Flex(
+              direction: horizontal ? Axis.horizontal : Axis.vertical,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  "Send an encrypted message",
-                  style: Theme.of(context).textTheme.headline3,
-                ),
-                Text(
-                    "Send any message safe and secure. Because your message is encrypted on your device, your private data can only be read by the intended recipient.")
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Container(
-                color: Colors.white.withOpacity(.3),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        decoration: InputDecoration(hintText: "Your Message"),
-                        minLines: 10,
-                        maxLines: null,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: ElevatedButton(
-                            onPressed: () {}, child: Text("Encrypt Message")),
-                      )
-                    ],
+                Flexible(
+                  flex: 1,
+                  child: Padding(
+                    padding: horizontal
+                        ? const EdgeInsets.only(right: 10)
+                        : const EdgeInsets.only(bottom: 10),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Send an encrypted message",
+                          style: Theme.of(context).textTheme.headline3,
+                        ),
+                        Text(
+                            "Send any message safe and secure. Because your message is encrypted on your device, your private data can only be read by the intended recipient.")
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          )
-        ],
+                Flexible(
+                  flex: 1,
+                  child: Padding(
+                    padding: horizontal
+                        ? const EdgeInsets.only(left: 10)
+                        : const EdgeInsets.only(top: 10),
+                    child: Container(
+                      color: Colors.white.withOpacity(.3),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              decoration:
+                                  InputDecoration(hintText: "Your Message"),
+                              minLines: 10,
+                              maxLines: null,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: ElevatedButton(
+                                  onPressed: () {},
+                                  child: Text("Encrypt Message")),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ]);
+        },
       ),
     );
   }
@@ -89,12 +106,21 @@ class Page extends StatelessWidget {
             widthFactor: .8,
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 40, bottom: 100),
-                  child: Text(
-                    "Secure Messaging Platform",
-                    style: Theme.of(context).textTheme.headline3,
-                  ),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final horizontal =
+                        constraints.isSatisfiedBy(Size.fromWidth(800));
+
+                    return Padding(
+                      padding: horizontal
+                          ? EdgeInsets.only(top: 50, bottom: 80)
+                          : EdgeInsets.only(top: 50, bottom: 50),
+                      child: Text(
+                        "Secure Messaging Platform",
+                        style: Theme.of(context).textTheme.headline3,
+                      ),
+                    );
+                  },
                 ),
                 child
               ],
