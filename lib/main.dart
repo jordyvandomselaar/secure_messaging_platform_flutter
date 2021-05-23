@@ -317,37 +317,39 @@ class Page extends StatelessWidget {
             Color.fromRGBO(117, 121, 255, 1),
             Color.fromRGBO(178, 36, 239, 1),
           ])),
-          child: FractionallySizedBox(
-            widthFactor: .8,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final horizontal =
-                        constraints.isSatisfiedBy(Size.fromWidth(800));
+          child: SingleChildScrollView(
+            child: FractionallySizedBox(
+              widthFactor: .8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final horizontal =
+                          constraints.isSatisfiedBy(Size.fromWidth(800));
 
-                    return Padding(
-                      padding: horizontal
-                          ? EdgeInsets.only(top: 50, bottom: 80)
-                          : EdgeInsets.only(top: 50, bottom: 50),
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () =>
-                              ModalRoute.of(context)?.settings.name == "/"
-                                  ? null
-                                  : router.navigateTo(context, "/"),
-                          child: Text(
-                            "Secure Messaging Platform",
-                            style: Theme.of(context).textTheme.headline3,
+                      return Padding(
+                        padding: horizontal
+                            ? EdgeInsets.only(top: 50, bottom: 80)
+                            : EdgeInsets.only(top: 50, bottom: 50),
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () =>
+                                ModalRoute.of(context)?.settings.name == "/"
+                                    ? null
+                                    : router.navigateTo(context, "/"),
+                            child: Text(
+                              "Secure Messaging Platform",
+                              style: Theme.of(context).textTheme.headline3,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-                child
-              ],
+                      );
+                    },
+                  ),
+                  child
+                ],
+              ),
             ),
           ),
         ),
