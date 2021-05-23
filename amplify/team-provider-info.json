@@ -1,0 +1,23 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-securemessagingplatf-dev-54901-authRole",
+            "UnauthRoleArn": "arn:aws:iam::567560842282:role/amplify-securemessagingplatf-dev-54901-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::567560842282:role/amplify-securemessagingplatf-dev-54901-authRole",
+            "Region": "eu-central-1",
+            "DeploymentBucketName": "amplify-securemessagingplatf-dev-54901-deployment",
+            "UnauthRoleName": "amplify-securemessagingplatf-dev-54901-unauthRole",
+            "StackName": "amplify-securemessagingplatf-dev-54901",
+            "StackId": "arn:aws:cloudformation:eu-central-1:567560842282:stack/amplify-securemessagingplatf-dev-54901/d2003d00-bb79-11eb-a8a2-060ba979a966",
+            "AmplifyAppId": "d2k7xzrb2i3gw3"
+        },
+        "categories": {
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "d2k7xzrb2i3gw3",
+                    "type": "cicd"
+                }
+            }
+        }
+    }
+}
