@@ -72,8 +72,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _controller = TextEditingController();
-  String? _password;
-  String? _url;
+  final _passwordController = TextEditingController();
+  final _urlController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -93,88 +93,137 @@ class _HomePageState extends State<HomePage> {
                         ? const EdgeInsets.only(right: 10)
                         : const EdgeInsets.only(bottom: 10),
                     child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: Text(
-                            "Send an encrypted message",
-                            style: Theme.of(context).textTheme.headline2,
-                          ),
-                        ),
-                        Text(
-                          "Send any message safe and secure. Because your message is encrypted on your device, your private data can only be read by the intended recipient.",
-                          style: Theme.of(context).textTheme.bodyText1,
-                        )
-                      ],
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _urlController.text.isNotEmpty &&
+                              _passwordController.text.isNotEmpty
+                          ? [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: Text(
+                                  "Share your encrypted message",
+                                  style: Theme.of(context).textTheme.headline2,
+                                ),
+                              ),
+                              Text(
+                                "Make sure to send both the URL and the Password",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              )
+                            ]
+                          : [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: Text(
+                                  "Send an encrypted message",
+                                  style: Theme.of(context).textTheme.headline2,
+                                ),
+                              ),
+                              Text(
+                                "Send any message safe and secure. Because your message is encrypted on your device, your private data can only be read by the intended recipient.",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              )
+                            ],
                     ),
                   ),
                 ),
-                Flexible(
-                  flex: 1,
-                  child: Padding(
-                    padding: horizontal
-                        ? const EdgeInsets.only(left: 10)
-                        : const EdgeInsets.only(top: 10),
-                    child: Container(
-                      color: Colors.white.withOpacity(.3),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              decoration:
-                                  InputDecoration(hintText: "Your Message"),
-                              minLines: 10,
-                              maxLines: null,
-                              controller: _controller,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: Mutation(
-                                options: MutationOptions(
-                                  document: gql(createMessage),
-                                  onCompleted: (dynamic resultData) {
-                                    final String id =
-                                        resultData['createMessage']['id'];
+                _passwordController.text.isNotEmpty &&
+                        _urlController.text.isNotEmpty
+                    ? Flexible(
+                        flex: 1,
+                        child: Padding(
+                            padding: horizontal
+                                ? const EdgeInsets.only(left: 10)
+                                : const EdgeInsets.only(top: 10),
+                            child: Container(
+                                color: Colors.white.withOpacity(.3),
+                                child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        TextField(
+                                          decoration:
+                                              InputDecoration(labelText: "Url"),
+                                          controller: _urlController,
+                                        ),
+                                        TextField(
+                                          decoration: InputDecoration(
+                                            labelText: "Password",
+                                          ),
+                                          controller: _passwordController,
+                                        )
+                                      ],
+                                    )))))
+                    : Flexible(
+                        flex: 1,
+                        child: Padding(
+                          padding: horizontal
+                              ? const EdgeInsets.only(left: 10)
+                              : const EdgeInsets.only(top: 10),
+                          child: Container(
+                            color: Colors.white.withOpacity(.3),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextField(
+                                    decoration: InputDecoration(
+                                        hintText: "Your Message"),
+                                    minLines: 10,
+                                    maxLines: null,
+                                    controller: _controller,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    child: Mutation(
+                                      options: MutationOptions(
+                                        document: gql(createMessage),
+                                        onCompleted: (dynamic resultData) {
+                                          final String id =
+                                              resultData['createMessage']['id'];
 
-                                    setState(() {
-                                      _url = "${Uri.base}/$id";
-                                    });
-                                  },
-                                ),
-                                builder: (runMutation, result) {
-                                  return ElevatedButton(
-                                      onPressed: () {
-                                        final text = _controller.text;
-                                        final iv =
-                                            encrypt.IV.fromSecureRandom(16);
-                                        final key =
-                                            encrypt.Key.fromSecureRandom(32);
-                                        final encrypter =
-                                            encrypt.Encrypter(encrypt.AES(key));
-                                        final encrypted =
-                                            encrypter.encrypt(text, iv: iv);
+                                          setState(() {
+                                            _urlController.text =
+                                                "${Uri.base}$id";
+                                          });
+                                        },
+                                      ),
+                                      builder: (runMutation, result) {
+                                        return ElevatedButton(
+                                            onPressed: () {
+                                              final text = _controller.text;
+                                              final iv = encrypt.IV
+                                                  .fromSecureRandom(16);
+                                              final key =
+                                                  encrypt.Key.fromSecureRandom(
+                                                      32);
+                                              final encrypter =
+                                                  encrypt.Encrypter(
+                                                      encrypt.AES(key));
+                                              final encrypted = encrypter
+                                                  .encrypt(text, iv: iv);
 
-                                        setState(() {
-                                          _password = key.base64;
-                                        });
+                                              setState(() {
+                                                _passwordController.text =
+                                                    key.base64;
+                                              });
 
-                                        runMutation({
-                                          "message": encrypted.base64,
-                                          "iv": iv.base64
-                                        });
+                                              runMutation({
+                                                "message": encrypted.base64,
+                                                "iv": iv.base64
+                                              });
+                                            },
+                                            child: Text("Encrypt Message"));
                                       },
-                                      child: Text("Encrypt Message"));
-                                },
+                                    ),
+                                  )
+                                ],
                               ),
-                            )
-                          ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                )
+                      )
               ]);
         },
       ),
@@ -201,6 +250,7 @@ class DecryptMessagePage extends StatelessWidget {
                         ? const EdgeInsets.only(right: 10)
                         : const EdgeInsets.only(bottom: 10),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 20),
@@ -282,9 +332,15 @@ class Page extends StatelessWidget {
                           ? EdgeInsets.only(top: 50, bottom: 80)
                           : EdgeInsets.only(top: 50, bottom: 50),
                       child: Center(
-                        child: Text(
-                          "Secure Messaging Platform",
-                          style: Theme.of(context).textTheme.headline3,
+                        child: GestureDetector(
+                          onTap: () =>
+                              ModalRoute.of(context)?.settings.name == "/"
+                                  ? null
+                                  : router.navigateTo(context, "/"),
+                          child: Text(
+                            "Secure Messaging Platform",
+                            style: Theme.of(context).textTheme.headline3,
+                          ),
                         ),
                       ),
                     );
