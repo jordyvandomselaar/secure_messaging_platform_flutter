@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 20),
                                 child: Text(
-                                  "Send an encrypted message.",
+                                  "Send an encrypted message",
                                   style: Theme.of(context)
                                       .textTheme
                                       .headline2
