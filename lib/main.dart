@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:fluro/fluro.dart';
@@ -6,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:secure_messaging_platform_flutter/mutations.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:secure_messaging_platform_flutter/queries.dart';
 
 const apiUrl = const String.fromEnvironment("API_URL");
 const apiKey = const String.fromEnvironment("API_KEY");
@@ -31,8 +33,7 @@ var homeHandler = Handler(handlerFunc: (context, parameters) {
 
 var decryptHandler = Handler(
   handlerFunc: (context, parameters) {
-    print(parameters);
-    return DecryptMessagePage();
+    return DecryptMessagePage(messageId: parameters["id"]![0]);
   },
 );
 
@@ -231,7 +232,19 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class DecryptMessagePage extends StatelessWidget {
+class DecryptMessagePage extends StatefulWidget {
+  final String messageId;
+
+  DecryptMessagePage({required this.messageId});
+
+  @override
+  _DecryptMessagePageState createState() => _DecryptMessagePageState();
+}
+
+class _DecryptMessagePageState extends State<DecryptMessagePage> {
+  final _passwordController = TextEditingController();
+  String? decryptedMessage;
+
   @override
   Widget build(BuildContext context) {
     return Page(
@@ -255,14 +268,17 @@ class DecryptMessagePage extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 20),
                           child: Text(
-                            "Decrypt your message",
+                            decryptedMessage is String
+                                ? "Your message"
+                                : "Decrypt your message",
                             style: Theme.of(context).textTheme.headline2,
                           ),
                         ),
-                        Text(
-                          "Enter the password you received",
-                          style: Theme.of(context).textTheme.bodyText1,
-                        )
+                        if (decryptedMessage == null)
+                          Text(
+                            "Enter the password you received",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )
                       ],
                     ),
                   ),
@@ -277,19 +293,51 @@ class DecryptMessagePage extends StatelessWidget {
                       color: Colors.white.withOpacity(.3),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              decoration: InputDecoration(hintText: "Password"),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: ElevatedButton(
-                                  onPressed: () {},
-                                  child: Text("Decrypt Message")),
-                            )
-                          ],
+                        child: Query(
+                          options: QueryOptions(
+                              document: gql(getMessage),
+                              variables: {"id": widget.messageId}),
+                          builder: (result, {fetchMore, refetch}) {
+                            final String? encryptedString =
+                                result.data?['getMessage']["message"];
+                            final String? storedIv =
+                                result.data?["getMessage"]["iv"];
+
+                            if (decryptedMessage is String) {
+                              return Text(decryptedMessage as String);
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextField(
+                                  decoration:
+                                      InputDecoration(hintText: "Password"),
+                                  controller: _passwordController,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        final iv = encrypt.IV
+                                            .fromBase64(storedIv as String);
+                                        final key = encrypt.Key.fromBase64(
+                                            _passwordController.text);
+                                        final encrypter =
+                                            encrypt.Encrypter(encrypt.AES(key));
+
+                                        setState(() {
+                                          decryptedMessage = encrypter.decrypt(
+                                              encrypt.Encrypted.fromBase64(
+                                                  encryptedString as String),
+                                              iv: iv);
+                                        });
+                                      },
+                                      child: Text("Decrypt Message")),
+                                )
+                              ],
+                            );
+                          },
                         ),
                       ),
                     ),
