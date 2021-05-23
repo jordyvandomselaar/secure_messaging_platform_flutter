@@ -135,7 +135,9 @@ class _HomePageState extends State<HomePage> {
                                 ? const EdgeInsets.only(left: 10)
                                 : const EdgeInsets.only(top: 10),
                             child: Container(
-                                color: Colors.white.withOpacity(.3),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: Colors.white.withOpacity(.3)),
                                 child: Padding(
                                     padding: const EdgeInsets.all(20),
                                     child: Column(
@@ -162,7 +164,9 @@ class _HomePageState extends State<HomePage> {
                               ? const EdgeInsets.only(left: 10)
                               : const EdgeInsets.only(top: 10),
                           child: Container(
-                            color: Colors.white.withOpacity(.3),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: Colors.white.withOpacity(.3)),
                             child: Padding(
                               padding: const EdgeInsets.all(20),
                               child: Column(
@@ -290,7 +294,9 @@ class _DecryptMessagePageState extends State<DecryptMessagePage> {
                         ? const EdgeInsets.only(left: 10)
                         : const EdgeInsets.only(top: 10),
                     child: Container(
-                      color: Colors.white.withOpacity(.3),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Colors.white.withOpacity(.3)),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: Query(
