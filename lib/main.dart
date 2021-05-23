@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
     return Page(
       child: LayoutBuilder(
         builder: (buildContext, boxConstraints) {
-          final horizontal = boxConstraints.isSatisfiedBy(Size.fromWidth(800));
+          final horizontal = MediaQuery.of(context).size.width >= 1000;
 
           return Flex(
               direction: horizontal ? Axis.horizontal : Axis.vertical,
@@ -115,7 +115,11 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.only(bottom: 20),
                                 child: Text(
                                   "Send an encrypted message",
-                                  style: Theme.of(context).textTheme.headline2,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline2
+                                      ?.apply(
+                                          fontSizeFactor: horizontal ? 1 : .7),
                                 ),
                               ),
                               Text(
@@ -254,7 +258,7 @@ class _DecryptMessagePageState extends State<DecryptMessagePage> {
     return Page(
       child: LayoutBuilder(
         builder: (buildContext, boxConstraints) {
-          final horizontal = boxConstraints.isSatisfiedBy(Size.fromWidth(800));
+          final horizontal = MediaQuery.of(context).size.width >= 1000;
 
           return Flex(
               direction: horizontal ? Axis.horizontal : Axis.vertical,
@@ -373,14 +377,14 @@ class Page extends StatelessWidget {
           ])),
           child: SingleChildScrollView(
             child: FractionallySizedBox(
-              widthFactor: .8,
+              widthFactor: MediaQuery.of(context).size.width >= 1000 ? .8 : .95,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   LayoutBuilder(
                     builder: (context, constraints) {
                       final horizontal =
-                          constraints.isSatisfiedBy(Size.fromWidth(800));
+                          MediaQuery.of(context).size.width >= 1000;
 
                       return Padding(
                         padding: horizontal
@@ -401,7 +405,10 @@ class Page extends StatelessWidget {
                       );
                     },
                   ),
-                  child
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: child,
+                  )
                 ],
               ),
             ),
